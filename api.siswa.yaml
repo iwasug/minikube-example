@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anbk-dev-api-siswa
+  namespace: default
+  labels:
+    app: anbk-dev-api-siswa
+    version: v1
+spec:
+  selector:
+    matchLabels:
+      app: anbk-dev-api-siswa
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: anbk-dev-api-siswa
+        version: v1
+    spec:
+      containers:
+        - name: anbk-dev-api-siswa
+          image: docker.io/devradyalabs/dev:anbk-dev-siswa-api
+          imagePullPolicy : Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+            - name: ConnectionStrings__DefaultConnection
+              value: "Server=radyalabs.asuscomm.com;Port=57462;Database=CBT.Auth;User Id=postgres;password=AKUsayangRL2011;"
+            - name: ConnectionStrings__BankSoalConnection
+              value: "Server=radyalabs.asuscomm.com;Port=57462;Database=CBT.BankSoal;User Id=postgres;password=AKUsayangRL2011;"
+            - name: ConnectionStrings__CBTConnection
+              value: "Server=radyalabs.asuscomm.com;Port=57462;Database=CBT.Siswa;User Id=postgres;password=AKUsayangRL2011;"    
+            - name: TZ
+              value: Asia/Jakarta
+            - name: ASPNETCORE_PATH_BASE
+              value: https://anbk-local.com/api.siswa 
+      imagePullSecrets:
+         - name: regcred  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: anbk-dev-api-siswa-service
+  namespace: default
+spec:
+  selector:
+    app: anbk-dev-api-siswa
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort #ClusterIP # LoadBalancer#  NodePort 

@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+
+kind: Ingress
+
+metadata:
+  name: anbk-ingress
+  annotations:
+    #nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite /api.siswa/(.*) /$1 break;
+      rewrite /api.auth/(.*) /$1 break;
+spec:
+  rules:
+    - host: anbk-local.com
+      http:
+        paths:
+          - path: /api.auth/
+            pathType: Prefix
+            backend:
+              service:
+                name: anbk-dev-api-auth-service
+                port:
+                  number: 80
+          - path: /api.siswa/
+            pathType: Prefix
+            backend:
+              service:
+                name: anbk-dev-api-siswa-service
+                port:
+                  number: 80        
